@@ -42,3 +42,6 @@
 
 # .vSCode
 .vscode/
+
+# build directory
+/build/
