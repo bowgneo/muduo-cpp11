@@ -8,10 +8,7 @@ project(mymuduo LANGUAGES CXX)
 # 📦 输出路径设置
 # ============================================================
 # 编译生成的库和可执行文件的输出目录
-# Debug / Release 会分别放在不同目录下
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib/${CMAKE_BUILD_TYPE})  # 静态库输出目录 (.a)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib/${CMAKE_BUILD_TYPE})  # 动态库输出目录 (.so)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/${CMAKE_BUILD_TYPE})  # 可执行文件输出目录
+set(LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 
 # ============================================================
 # ⚙️ 编译配置
@@ -46,8 +43,8 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG -Wall -Wextra")
 # 自动查找源码文件（支持 .cpp/.cc）
 # 你也可以指定 src 目录，例如 file(GLOB SRC_LIST "src/*.cpp")
 file(GLOB SRC_LIST
-    "${PROJECT_SOURCE_DIR}/*.cpp"
-    "${PROJECT_SOURCE_DIR}/src/*.cpp"
+    "${PROJECT_SOURCE_DIR}/src/logger.cpp"
+    "${PROJECT_SOURCE_DIR}/src/timestamp.cpp"
 )
 
 # ============================================================

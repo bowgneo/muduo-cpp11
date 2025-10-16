@@ -11,7 +11,7 @@
         Logger &logger = Logger::instance(); \
         char buf[1024] = {0}; \
         snprintf(buf, 1024, msgFormat, ##__VA_ARGS__); \
-        logger.log(INFO, buf); \
+        logger.Log(INFO, buf); \
     } while(0) 
 
 #define LOG_ERROR(msgFormat, ...) \
@@ -20,7 +20,7 @@
         Logger &logger = Logger::instance(); \
         char buf[1024] = {0}; \
         snprintf(buf, 1024, msgFormat, ##__VA_ARGS__); \
-        logger.log(ERROR, buf); \
+        logger.Log(ERROR, buf); \
     } while(0) 
 
 #define LOG_FATAL(msgFormat, ...) \
@@ -29,7 +29,7 @@
         Logger &logger = Logger::instance(); \
         char buf[1024] = {0}; \
         snprintf(buf, 1024, msgFormat, ##__VA_ARGS__); \
-        logger.log(FATAL, buf); \
+        logger.Log(FATAL, buf); \
         exit(-1); \
     } while(0) 
 
@@ -40,7 +40,7 @@
         Logger &logger = Logger::instance(); \
         char buf[1024] = {0}; \
         snprintf(buf, 1024, msgFormat, ##__VA_ARGS__); \
-        logger.log(DEBUG, buf); \
+        logger.Log(DEBUG, buf); \
     } while(0) 
 #else
     #define LOG_DEBUG(msgFormat, ...)
@@ -58,6 +58,6 @@ enum LogLevel
 class Logger : NonCopyable
 {
 public:
-    static Logger& instance();
-    void log(LogLevel level, const std::string& msg);
+    static Logger& Instance();
+    void Log(LogLevel level, const std::string& msg);
 };
