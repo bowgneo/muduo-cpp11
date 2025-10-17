@@ -44,7 +44,8 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG -Wall -Wextra")
 # 你也可以指定 src 目录，例如 file(GLOB SRC_LIST "src/*.cpp")
 file(GLOB SRC_LIST
     "${PROJECT_SOURCE_DIR}/src/logger.cpp"
-    "${PROJECT_SOURCE_DIR}/src/timestamp.cpp"
+    "${PROJECT_SOURCE_DIR}/src/time_stamp.cpp"
+    "${PROJECT_SOURCE_DIR}/src/net_addr.cpp"
 )
 
 # ============================================================
