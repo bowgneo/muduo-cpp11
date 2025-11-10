@@ -79,7 +79,7 @@ void Channel::HandleEventWithGuard(TimeStamp receiveTime)
         }
     }
 
-    if (revents_ & (EPOLLIN | EPOLLPRI))
+    if (revents_ & EPOLLIN)
     {
         if (readCallback_)
         {
