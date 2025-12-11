@@ -1,14 +1,15 @@
 #pragma once
 
 /**
- * @note NonCopyable 类禁止拷贝构造和拷贝赋值
- * @note 该类可以作为基类使用，防止派生类在类外被实例化或者拷贝
+ * noncopyable被继承以后，派生类对象可以正常的构造和析构，但是派生类对象
+ * 无法进行拷贝构造和赋值操作
  */ 
-class NonCopyable {
+class noncopyable
+{
 public:
-    NonCopyable(const NonCopyable&) = delete;
-    NonCopyable& operator=(const NonCopyable&) = delete;
+    noncopyable(const noncopyable&) = delete;
+    noncopyable& operator=(const noncopyable&) = delete;
 protected:
-    NonCopyable() = default;
-    ~NonCopyable() = default;
+    noncopyable() = default;
+    ~noncopyable() = default;
 };

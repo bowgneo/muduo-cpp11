@@ -1,63 +1,74 @@
 #pragma once
 
 #include <string>
+
 #include "noncopyable.h"
 
-// 简易的日志系统，非线程安全版本
-
-#define LOG_INFO(msgFormat, ...) \
+// LOG_INFO("%s %d", arg1, arg2)
+#define LOG_INFO(logmsgFormat, ...) \
     do \
     { \
         Logger &logger = Logger::instance(); \
+        logger.setLogLevel(INFO); \
         char buf[1024] = {0}; \
-        snprintf(buf, 1024, msgFormat, ##__VA_ARGS__); \
-        logger.Log(INFO, buf); \
+        snprintf(buf, 1024, logmsgFormat, ##__VA_ARGS__); \
+        logger.log(buf); \
     } while(0) 
 
-#define LOG_ERROR(msgFormat, ...) \
+#define LOG_ERROR(logmsgFormat, ...) \
     do \
     { \
         Logger &logger = Logger::instance(); \
+        logger.setLogLevel(ERROR); \
         char buf[1024] = {0}; \
-        snprintf(buf, 1024, msgFormat, ##__VA_ARGS__); \
-        logger.Log(ERROR, buf); \
+        snprintf(buf, 1024, logmsgFormat, ##__VA_ARGS__); \
+        logger.log(buf); \
     } while(0) 
 
-#define LOG_FATAL(msgFormat, ...) \
+#define LOG_FATAL(logmsgFormat, ...) \
     do \
     { \
         Logger &logger = Logger::instance(); \
+        logger.setLogLevel(FATAL); \
         char buf[1024] = {0}; \
-        snprintf(buf, 1024, msgFormat, ##__VA_ARGS__); \
-        logger.Log(FATAL, buf); \
+        snprintf(buf, 1024, logmsgFormat, ##__VA_ARGS__); \
+        logger.log(buf); \
         exit(-1); \
     } while(0) 
 
 #ifdef MUDEBUG
-#define LOG_DEBUG(msgFormat, ...) \
+#define LOG_DEBUG(logmsgFormat, ...) \
     do \
     { \
         Logger &logger = Logger::instance(); \
+        logger.setLogLevel(DEBUG); \
         char buf[1024] = {0}; \
-        snprintf(buf, 1024, msgFormat, ##__VA_ARGS__); \
-        logger.Log(DEBUG, buf); \
+        snprintf(buf, 1024, logmsgFormat, ##__VA_ARGS__); \
+        logger.log(buf); \
     } while(0) 
 #else
-    #define LOG_DEBUG(msgFormat, ...)
+    #define LOG_DEBUG(logmsgFormat, ...)
 #endif
 
+// 定义日志的级别  INFO  ERROR  FATAL  DEBUG 
 enum LogLevel
 {
-    FATAL, // core信息
-    ERROR, // 错误信息
     INFO,  // 普通信息
+    ERROR, // 错误信息
+    FATAL, // core信息
     DEBUG, // 调试信息
 };
 
 // 输出一个日志类
-class Logger : NonCopyable
+class Logger : noncopyable
 {
 public:
-    static Logger& Instance();
-    void Log(LogLevel level, const std::string& msg);
+    // 获取日志唯一的实例对象
+    static Logger& instance();
+    // 设置日志级别
+    void setLogLevel(int level);
+    // 写日志
+    void log(std::string msg);
+private:
+    int logLevel_;
 };

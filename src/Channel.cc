@@ -1,11 +1,11 @@
+#include "Channel.h"
+#include "EventLoop.h"
+#include "Logger.h"
+
 #include <sys/epoll.h>
 
-#include "logger.h"
-#include "channel.h"
-#include "event_loop.h"
-
 const int Channel::kNoneEvent = 0;
-const int Channel::kReadEvent = EPOLLIN;
+const int Channel::kReadEvent = EPOLLIN | EPOLLPRI;
 const int Channel::kWriteEvent = EPOLLOUT;
 
 // EventLoop: ChannelList Poller
@@ -18,8 +18,8 @@ Channel::~Channel()
 {
 }
 
-// channel的tie方法什么时候调用？一个TcpConnection新连接创建的时候 TcpConnection => Channel 
-void Channel::Tie(const std::shared_ptr<void> &obj)
+// channel的tie方法什么时候调用过？一个TcpConnection新连接创建的时候 TcpConnection => Channel 
+void Channel::tie(const std::shared_ptr<void> &obj)
 {
     tie_ = obj;
     tied_ = true;
@@ -29,37 +29,37 @@ void Channel::Tie(const std::shared_ptr<void> &obj)
  * 当改变channel所表示fd的events事件后，update负责在poller里面更改fd相应的事件epoll_ctl
  * EventLoop => ChannelList   Poller
  */ 
-void Channel::Update()
+void Channel::update()
 {
     // 通过channel所属的EventLoop，调用poller的相应方法，注册fd的events事件
-    loop_->UpdateChannel(this);
+    loop_->updateChannel(this);
 }
 
 // 在channel所属的EventLoop中， 把当前的channel删除掉
-void Channel::Remove()
+void Channel::remove()
 {
-    loop_->RemoveChannel(this);
+    loop_->removeChannel(this);
 }
 
 // fd得到poller通知以后，处理事件的
-void Channel::HandleEvent(TimeStamp receiveTime)
+void Channel::handleEvent(Timestamp receiveTime)
 {
     if (tied_)
     {
         std::shared_ptr<void> guard = tie_.lock();
         if (guard)
         {
-            HandleEventWithGuard(receiveTime);
+            handleEventWithGuard(receiveTime);
         }
     }
     else
     {
-        HandleEventWithGuard(receiveTime);
+        handleEventWithGuard(receiveTime);
     }
 }
 
 // 根据poller通知的channel发生的具体事件， 由channel负责调用具体的回调操作
-void Channel::HandleEventWithGuard(TimeStamp receiveTime)
+void Channel::handleEventWithGuard(Timestamp receiveTime)
 {
     LOG_INFO("channel handleEvent revents:%d\n", revents_);
 
@@ -79,7 +79,7 @@ void Channel::HandleEventWithGuard(TimeStamp receiveTime)
         }
     }
 
-    if (revents_ & EPOLLIN)
+    if (revents_ & (EPOLLIN | EPOLLPRI))
     {
         if (readCallback_)
         {

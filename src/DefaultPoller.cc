@@ -1,10 +1,9 @@
+#include "Poller.h"
+#include "EPollPoller.h"
+
 #include <stdlib.h>
 
-#include "poller.h"
-#include "epoll_poller.h"
-
-
-Poller* Poller::NewDefaultPoller(EventLoop *loop)
+Poller* Poller::newDefaultPoller(EventLoop *loop)
 {
     if (::getenv("MUDUO_USE_POLL"))
     {
