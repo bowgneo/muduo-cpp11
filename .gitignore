@@ -45,3 +45,5 @@
 
 # build directory
 /build/
+
+.idea/
