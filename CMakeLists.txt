@@ -43,9 +43,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG -Wall -Wextra")
 # 自动查找源码文件（支持 .cpp/.cc）
 # 你也可以指定 src 目录，例如 file(GLOB SRC_LIST "src/*.cpp")
 file(GLOB SRC_LIST
-    "${PROJECT_SOURCE_DIR}/src/logger.cpp"
-    "${PROJECT_SOURCE_DIR}/src/time_stamp.cpp"
-    "${PROJECT_SOURCE_DIR}/src/net_addr.cpp"
+        "${PROJECT_SOURCE_DIR}/src/*"
 )
 
 # ============================================================
@@ -60,7 +58,7 @@ add_library(mymuduo SHARED ${SRC_LIST})
 #   1. 当前目标可以用
 #   2. 其他依赖此库的目标也会继承这个 include 路径
 target_include_directories(mymuduo PUBLIC
-    ${PROJECT_SOURCE_DIR}/include
+        ${PROJECT_SOURCE_DIR}/include
 )
 
 # ============================================================
