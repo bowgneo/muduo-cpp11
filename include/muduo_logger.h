@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include "noncopyable.h"
+#include "muduo_noncopyable.h"
 
 // LOG_INFO("%s %d", arg1, arg2)
 #define LOG_INFO(msgFormat, ...) \
