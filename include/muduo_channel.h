@@ -88,7 +88,7 @@ private:
 
     EventLoop *loop_; // channel 关联的事件循环
     const int fd_; // channel 关联的 fd
-    int index_; // channel 的索引
+    int index_; // channel 的类别，在 poller 中区分，即是否添加到 poller 中等标记
     int events_; // channel 感兴趣的事件
     int revents_; // channel 具体发生的事件
 

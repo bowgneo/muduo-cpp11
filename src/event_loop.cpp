@@ -1,7 +1,7 @@
-#include "EventLoop.h"
+#include "muduo_event_loop.h"
 #include "Logger.h"
-#include "Poller.h"
-#include "Channel.h"
+#include "muduo_poller.h"
+#include "muduo_channel.h"
 
 #include <sys/eventfd.h>
 #include <unistd.h>
@@ -29,7 +29,7 @@ int CreateEventfd()
 EventLoop::EventLoop()
     : looping_(false)
     , quit_(false)
-    , callingPendingFunctors_(false)
+    , hasFunctors_(false)
     , threadId_(CurrentThread::tid())
     , poller_(Poller::NewDefaultPoller(this))
     , wakeupFd_(CreateEventfd())
@@ -130,7 +130,7 @@ void EventLoop::queueInLoop(Functor cb)
 
     // 唤醒相应的，需要执行上面回调操作的loop的线程了
     // || callingPendingFunctors_的意思是：当前loop正在执行回调，但是loop又有了新的回调
-    if (!isInLoopThread() || callingPendingFunctors_) 
+    if (!isInLoopThread() || hasFunctors_) 
     {
         wakeup(); // 唤醒loop所在线程
     }
@@ -176,7 +176,7 @@ bool EventLoop::hasChannel(Channel *channel)
 void EventLoop::doPendingFunctors() // 执行回调
 {
     std::vector<Functor> functors;
-    callingPendingFunctors_ = true;
+    hasFunctors_ = true;
 
     {
         std::unique_lock<std::mutex> lock(mutex_);
@@ -188,5 +188,5 @@ void EventLoop::doPendingFunctors() // 执行回调
         functor(); // 执行当前loop需要执行的回调操作
     }
 
-    callingPendingFunctors_ = false;
+    hasFunctors_ = false;
 }
