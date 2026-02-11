@@ -54,6 +54,7 @@ private:
     // Eventloop 中的 wake up channel 唤醒后执行的操作
     void handleRead() const;
 
+    // 处理额外的回调
     void doPendingFunctors();
 
     using ChannelList = std::vector<Channel *>;

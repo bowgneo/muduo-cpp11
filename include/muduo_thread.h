@@ -1,30 +1,31 @@
 #pragma once
 
-#include "noncopyable.h"
+#include "muduo_noncopyable.h"
 
-#include <functional>
 #include <thread>
 #include <memory>
-#include <unistd.h>
 #include <string>
 #include <atomic>
+#include <functional>
 
-class Thread : noncopyable
-{
+class Thread : Noncopyable {
 public:
     using ThreadFunc = std::function<void()>;
 
-    explicit Thread(ThreadFunc, const std::string &name = std::string());
+    explicit Thread(ThreadFunc, std::string name = std::string());
+
     ~Thread();
 
     void start();
+
     void join();
 
     bool started() const { return started_; }
     pid_t tid() const { return tid_; }
-    const std::string& name() const { return name_; }
+    const std::string &name() const { return name_; }
 
     static int numCreated() { return numCreated_; }
+
 private:
     void setDefaultName();
 
