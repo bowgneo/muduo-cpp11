@@ -15,7 +15,7 @@ set(LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 # ============================================================
 
 # 使用 C++17 标准
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)   # 强制要求支持 C++17，否则报错
 set(CMAKE_CXX_EXTENSIONS OFF)         # 禁止使用 GNU 扩展，比如 -std=gnu++17，改为纯 -std=c++17
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)  # 自动加 -fPIC，生成可重定位代码（动态库需要）
