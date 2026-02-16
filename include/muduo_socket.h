@@ -1,16 +1,16 @@
 #pragma once
 
-#include "noncopyable.h"
+#include "muduo_noncopyable.h"
 
 class InetAddress;
 
-// 封装socket fd
-class Socket : noncopyable
+class Socket : Noncopyable
 {
 public:
     explicit Socket(int sockfd)
         : sockfd_(sockfd)
-    {}
+    {
+    }
 
     ~Socket();
 
@@ -25,6 +25,7 @@ public:
     void setReuseAddr(bool on);
     void setReusePort(bool on);
     void setKeepAlive(bool on);
+
 private:
     const int sockfd_;
 };
