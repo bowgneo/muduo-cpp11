@@ -11,9 +11,11 @@ public:
         : sockfd_(sockfd)
     {
     }
-
+    Socket() = default;
     ~Socket();
 
+    static int createNonblocking();
+    void setSocket(int sockfd) { sockfd_ = sockfd; }
     int fd() const { return sockfd_; }
     void bindAddress(const InetAddress &localaddr);
     void listen();
@@ -27,5 +29,5 @@ public:
     void setKeepAlive(bool on);
 
 private:
-    const int sockfd_;
+    int sockfd_;
 };
