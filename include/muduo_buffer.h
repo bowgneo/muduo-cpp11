@@ -7,7 +7,7 @@
 /*
  +***********+***********+***********+
  +  prepend  +  read     +    write  +
- +           +           +           +
+ + meta data +           +           +
  +***********+***********+***********+
  0        readindex    writeindex
 */
@@ -26,9 +26,11 @@ public:
     ssize_t readFd(int fd, int *saveErrno);
     ssize_t writeFd(int fd, int *saveErrno);
 
-    const char *begin() const;
-    const char *peek() const;
+    const char *begin() const; // buffer 起始地址
+    const char *peek() const;  // buffer 可读地址
     const char *beginWrite() const;
+
+    void append(const char *data, size_t len);
 
     size_t readableBytes() const;
     size_t writableBytes() const;
@@ -43,7 +45,6 @@ private:
     size_t prependableBytes() const;
     void ensureWriteableBytes(size_t len);
     void makeSpace(size_t len);
-    void append(const char *data, size_t len);
 
     void retrieveAll();
     void retrieve(size_t len);

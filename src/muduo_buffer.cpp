@@ -44,6 +44,7 @@ ssize_t Buffer::writeFd(int fd, int *saveErrno)
     {
         *saveErrno = errno;
     }
+    retrieve(n);
     return n;
 }
 
@@ -144,6 +145,6 @@ void Buffer::retrieve(size_t len)
 
 void Buffer::retrieveAll()
 {
-    readerIndex_ = writerIndex_;
     writerIndex_ = kCheapPrepend;
+    readerIndex_ = writerIndex_;
 }
