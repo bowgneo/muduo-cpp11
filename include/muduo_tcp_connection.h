@@ -37,6 +37,7 @@ public:
     void connectEstablished();
     void connectDestroyed();
 
+    // 发送数据，未发完的数据会暂时保存到缓存区，并注册写事件，等待下次接续发送
     void send(const std::string &buf);
     void shutdown();
 
@@ -82,7 +83,7 @@ private:
     void handleClose();
     void handleError();
 
-    // 发送数据
+    // 通过 ioloop 发送数据
     void sendInLoop(const void *message, size_t len);
     void shutdownInLoop();
 
@@ -105,5 +106,5 @@ private:
     size_t highWaterMark_;
 
     Buffer inputBuffer_;  // 接收数据的缓冲区
-    Buffer outputBuffer_; // 发送数据的缓冲区
+    Buffer outputBuffer_; // 发送数据的缓冲区，保存的是之前未一次性发送完的数据
 };

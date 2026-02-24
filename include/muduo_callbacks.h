@@ -8,7 +8,7 @@ class Timestamp;
 class TcpConnection;
 
 using TcpConnectionPtr = std::shared_ptr<TcpConnection>;
-// 新连接完成时的回调
+// 连接状态变换时的回调
 using ConnectionCallback = std::function<void(const TcpConnectionPtr &)>;
 // 连接断时的回调
 using CloseCallback = std::function<void(const TcpConnectionPtr &)>;

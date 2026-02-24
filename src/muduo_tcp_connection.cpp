@@ -81,6 +81,7 @@ void TcpConnection::sendInLoop(const void *data, size_t len)
         return;
     }
 
+    // 当前如果还有未完成的写事件 或者 输出缓冲区有未发送完的数据
     if (!channel_->isWriting() && outputBuffer_.readableBytes() == 0)
     {
         nwrote = ::write(channel_->fd(), data, len);
@@ -161,6 +162,11 @@ void TcpConnection::connectDestroyed()
     {
         setState(kDisconnected);
         channel_->disableAll();
+
+        if (connectionCallback_)
+        {
+            connectionCallback_(shared_from_this());
+        }
     }
     channel_->remove();
 }
