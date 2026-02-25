@@ -3,10 +3,14 @@
 
 #include <stdlib.h>
 
-Poller *Poller::newDefaultPoller(EventLoop *loop) {
-    if (::getenv("MUDUO_USE_POLL")) {
+Poller *Poller::newDefaultPoller(EventLoop *loop)
+{
+    if (::getenv("MUDUO_USE_POLL"))
+    {
         return nullptr;
-    } else {
+    }
+    else
+    {
         return dynamic_cast<Poller *>(new EPollPoller(loop));
     }
 }
