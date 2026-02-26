@@ -6,38 +6,39 @@
 
 EventLoopThread::EventLoopThread(ThreadInitCallback cb,
                                  const std::string &name)
-    : exiting_(false)
-      , thread_([this] { threadFunc(); }, name)
-      , mutex_()
-      , cond_()
-      , callback_(std::move(cb))
-      , loopPtr_(nullptr) {
+    : exiting_(false), thread_([this]
+                               { threadFunc(); }, name),
+      mutex_(), cond_(), callback_(std::move(cb)), loopPtr_(nullptr)
+{
 }
 
-EventLoopThread::~EventLoopThread() {
+EventLoopThread::~EventLoopThread()
+{
     exiting_ = true;
-    if (loopPtr_ != nullptr) {
+    if (loopPtr_ != nullptr)
+    {
         loopPtr_->quit();
         thread_.join();
     }
-    // loopPtr_ 会在析构时自动释放内存
 }
 
-EventLoop *EventLoopThread::startLoop() {
+EventLoop *EventLoopThread::startLoop()
+{
     thread_.start();
     {
+        // 线程的函数内创建 event loop 对象
         std::unique_lock<std::mutex> lock(mutex_);
-        cond_.wait(lock, [this] { return loopPtr_ != nullptr; });
+        cond_.wait(lock, [this]
+                   { return loopPtr_ != nullptr; });
     }
     return loopPtr_.get();
 }
 
-void EventLoopThread::threadFunc() {
-    // one loop per thread
-    // 使用智能指针管理 EventLoop 生命周期
-
+void EventLoopThread::threadFunc()
+{
     std::unique_ptr<EventLoop> loopRaw = std::make_unique<EventLoop>();
-    if (callback_) {
+    if (callback_)
+    {
         callback_(loopRaw.get());
     }
 
@@ -47,7 +48,6 @@ void EventLoopThread::threadFunc() {
         cond_.notify_one();
     }
 
-    // event loop
     loopPtr_->loop();
 
     std::unique_lock<std::mutex> lock(mutex_);

@@ -8,7 +8,8 @@
 #include <atomic>
 #include <functional>
 
-class Thread : Noncopyable {
+class Thread : Noncopyable
+{
 public:
     using ThreadFunc = std::function<void()>;
 

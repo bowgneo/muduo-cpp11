@@ -9,10 +9,10 @@
 #include <condition_variable>
 #include <memory>
 
-// 前向声明
 class EventLoop;
 
-class EventLoopThread : Noncopyable {
+class EventLoopThread : Noncopyable
+{
 public:
     using ThreadInitCallback = std::function<void(EventLoop *)>;
 
@@ -31,5 +31,5 @@ private:
     std::mutex mutex_;
     std::condition_variable cond_;
     ThreadInitCallback callback_;
-    std::unique_ptr<EventLoop> loopPtr_; // 用于管理 EventLoop 的生命周期
+    std::unique_ptr<EventLoop> loopPtr_;
 };
