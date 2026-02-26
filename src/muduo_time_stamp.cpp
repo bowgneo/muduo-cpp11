@@ -1,13 +1,16 @@
 #include "muduo_time_stamp.h"
 
-Timestamp::Timestamp() : microSecondsSinceEpoch_(0) {
+Timestamp::Timestamp() : microSecondsSinceEpoch_(0)
+{
 }
 
-Timestamp Timestamp::now() {
+Timestamp Timestamp::now()
+{
     return Timestamp(time(nullptr));
 }
 
-std::string Timestamp::toString() const {
+std::string Timestamp::toString() const
+{
     tm tm_time{};
     localtime_r(&microSecondsSinceEpoch_, &tm_time);
     char buf[128] = {0};

@@ -15,7 +15,8 @@ class Poller;
 
 // 事件循环：从 Poll 获取活跃事件的 Channel，并执行回调
 // one loop per thread!!!
-class EventLoop : Noncopyable {
+class EventLoop : Noncopyable
+{
 public:
     using Functor = std::function<void()>;
 
@@ -32,7 +33,7 @@ public:
     Timestamp pollReturnTime() const { return pollReturnTime_; }
 
     // 在当前 Eventloop中 执行 cb
-    void runInLoop(const Functor& cb);
+    void runInLoop(const Functor &cb);
 
     // 把 cb 放入队列中，唤醒 Eventloop 所在的线程，执行 cb
     void queueInLoop(Functor cb);
@@ -40,18 +41,18 @@ public:
     // 唤醒 Eventloop 所在的线程
     void wakeup() const;
 
-    // 更新 channel 后，有可能涉及到在 poll 中进行同步更新，用于提供给 channel 使用
+    // 更新 poll 中管理的 channel
     void updateChannel(Channel *channel) const;
 
     void removeChannel(Channel *channel) const;
 
     bool hasChannel(Channel *channel) const;
 
-    // 判断某个 EventLoop 对象是否和当前线程是关联的
+    // 判断当前 eventloop 关联的线程是否是当前线程
     bool isInLoopThread() const { return threadId_ == CurrentThread::tid(); }
 
 private:
-    // Eventloop 中的 wake up channel 唤醒后执行的操作
+    // wake up channel 的可读事件
     void handleRead() const;
 
     // 处理额外的回调
@@ -63,19 +64,18 @@ private:
     std::atomic_bool looping_;
     std::atomic_bool quit_;
 
-    // 当前 Eventloop 对象的线程 id
+    // 当前 Eventloop 关联的线程 id
     const pid_t threadId_;
 
     Timestamp pollReturnTime_;
     ChannelList activeChannels_;
     std::unique_ptr<Poller> poller_;
 
-    // 唤醒
-    // 主要作用，mainLoop 唤醒 subloop 处理
+    // 唤醒 loop
     int wakeupFd_;
     std::unique_ptr<Channel> wakeupChannel_;
 
-    // 当前 Eventloop 线程需要执行的任务队列， 即 cb 操作
+    // 标记当前 eventloop 线程正在处理 pendingFunctors
     std::atomic_bool callingFunctors_;
     std::vector<Functor> pendingFunctors_;
     std::mutex mutex_;
