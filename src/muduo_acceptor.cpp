@@ -19,11 +19,14 @@ static int createSocketFd()
 }
 
 Acceptor::Acceptor(EventLoop *loop, const InetAddress &listenAddr, bool reuseport)
-    : loop_(loop), acceptSocket_(createSocketFd()), acceptChannel_(loop, acceptSocket_.fd()), listenning_(false)
+    : loop_(loop),
+      acceptSocket_(createSocketFd()), acceptChannel_(loop, acceptSocket_.fd()),
+      listenning_(false)
 {
     acceptSocket_.setReuseAddr(true);
     acceptSocket_.setReusePort(true);
     acceptSocket_.bindAddress(listenAddr);
+
     acceptChannel_.setReadCallback(std::bind(&Acceptor::handleRead, this));
 }
 
@@ -35,24 +38,25 @@ Acceptor::~Acceptor()
 
 void Acceptor::listen()
 {
-    listenning_ = true;
     acceptSocket_.listen();
     acceptChannel_.enableReading();
+    listenning_ = true;
 }
 
 void Acceptor::handleRead()
 {
     InetAddress peerAddr;
     int connfd = acceptSocket_.accept(&peerAddr);
-    if (connfd >= 0)
+    if (connfd > 0)
     {
         if (newConnectionCallback_)
         {
-            // 轮询找到 subLoop，唤醒，分发当前的新客户端的 Channel
+            // 此次外部注册的 cb，应该是轮询找到 subLoop，唤醒，分发当前的新客户端的 conn channel
             newConnectionCallback_(connfd, peerAddr);
         }
         else
         {
+            LOG_INFO("%s:%s:%d newConnectionCallback_ is null, close fd: %d.\n", __FILE__, __FUNCTION__, __LINE__, connfd);
             ::close(connfd);
         }
     }

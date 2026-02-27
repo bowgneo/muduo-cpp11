@@ -17,7 +17,7 @@ ssize_t Buffer::readFd(int fd, int *saveErrno)
     vec[1].iov_base = extrabuf;
     vec[1].iov_len = sizeof extrabuf;
 
-    // 限制一次性读取的字节数最多 128k - 1
+    // 限制一次性读取的字节数最少 64k
     const int iovcnt = (writable < sizeof extrabuf) ? 2 : 1;
     const ssize_t n = ::readv(fd, vec, iovcnt);
     if (n < 0)
@@ -44,7 +44,12 @@ ssize_t Buffer::writeFd(int fd, int *saveErrno)
     {
         *saveErrno = errno;
     }
-    retrieve(n);
+    else
+    {
+
+        retrieve(n);
+    }
+
     return n;
 }
 
@@ -71,11 +76,6 @@ size_t Buffer::readableBytes() const
 size_t Buffer::writableBytes() const
 {
     return buffer_.size() - writerIndex_;
-}
-
-size_t Buffer::prependableBytes() const
-{
-    return readerIndex_;
 }
 
 char *Buffer::beginWrite()
@@ -105,7 +105,7 @@ void Buffer::ensureWriteableBytes(size_t len)
 
 void Buffer::makeSpace(size_t len)
 {
-    if (writableBytes() + prependableBytes() < len + kCheapPrepend)
+    if (writableBytes() + readerIndex_ < len + kCheapPrepend)
     {
         buffer_.resize(writerIndex_ + len);
     }

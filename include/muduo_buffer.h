@@ -42,7 +42,6 @@ private:
     char *begin();
     char *beginWrite();
 
-    size_t prependableBytes() const;
     void ensureWriteableBytes(size_t len);
     void makeSpace(size_t len);
 

@@ -9,6 +9,9 @@
 class EventLoop;
 class InetAddress;
 
+/*
+ * 在 mainloop 中创建 listen channel，并设置读回调，当有新连接时，触发回调函数
+ */
 class Acceptor : Noncopyable
 {
 public:
@@ -22,13 +25,14 @@ public:
         newConnectionCallback_ = cb;
     }
 
-    bool listenning() const { return listenning_; }
     void listen();
+    bool listenning() const { return listenning_; }
 
 private:
+    // listen channel 读回调函数
     void handleRead();
 
-    EventLoop *loop_; // Acceptor 由 main loop 管理
+    EventLoop *loop_; // 关联的 main loop
     Socket acceptSocket_;
     Channel acceptChannel_;
     bool listenning_;
