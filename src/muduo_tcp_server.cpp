@@ -31,12 +31,8 @@ TcpServer::~TcpServer()
 {
     for (auto &item : connections_)
     {
-        TcpConnectionPtr conn(item.second);
-        item.second.reset();
-
-        // 销毁连接
-        conn->getLoop()->runInLoop(
-            std::bind(&TcpConnection::connectDestroyed, conn));
+        item.second->getLoop()->runInLoop(
+            std::bind(&TcpConnection::connectDestroyed, item.second));
     }
 }
 
@@ -51,12 +47,14 @@ void TcpServer::start()
     {
         threadPool_->start(threadInitCallback_);
         loop_->runInLoop(std::bind(&Acceptor::listen, acceptor_.get()));
+        return;
     }
+    started_--;
 }
 
 void TcpServer::newConnection(int sockfd, const InetAddress &peerAddr)
 {
-    // 轮询算法，选择一个 subLoop，管理通信的 channel
+    // 轮询算法，选择一个 subLoop，关联通信的 channel
     EventLoop *ioLoop = threadPool_->getNextLoop();
     char buf[64] = {0};
     snprintf(buf, sizeof buf, "-%s#%d", ipPort_.c_str(), nextConnId_++);
@@ -86,15 +84,9 @@ void TcpServer::newConnection(int sockfd, const InetAddress &peerAddr)
     conn->setMessageCallback(messageCallback_);
     conn->setWriteCompleteCallback(writeCompleteCallback_);
     conn->setCloseCallback(
-        std::bind(&TcpServer::removeConnection, this, std::placeholders::_1));
+        std::bind(&TcpServer::removeConnectionInLoop, this, std::placeholders::_1));
 
     ioLoop->runInLoop(std::bind(&TcpConnection::connectEstablished, conn));
-}
-
-void TcpServer::removeConnection(const TcpConnectionPtr &conn)
-{
-    loop_->runInLoop(
-        std::bind(&TcpServer::removeConnectionInLoop, this, conn));
 }
 
 void TcpServer::removeConnectionInLoop(const TcpConnectionPtr &conn)
@@ -104,6 +96,5 @@ void TcpServer::removeConnectionInLoop(const TcpConnectionPtr &conn)
 
     connections_.erase(conn->name());
     EventLoop *ioLoop = conn->getLoop();
-    ioLoop->queueInLoop(
-        std::bind(&TcpConnection::connectDestroyed, conn));
+    ioLoop->runInLoop(std::bind(&TcpConnection::connectDestroyed, conn));
 }

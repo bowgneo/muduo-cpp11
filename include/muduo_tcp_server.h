@@ -15,6 +15,9 @@
 #include <atomic>
 #include <unordered_map>
 
+/*
+ * 服务端接口
+ */
 class TcpServer : Noncopyable
 {
 public:
@@ -40,14 +43,14 @@ public:
     // 设置 subloop 的数量
     void setThreadNum(int numThreads);
 
-    // 启动服务端
     void start();
 
 private:
+    // 新连接的回调，设置给 acceptor
     void newConnection(int sockfd, const InetAddress &peerAddr);
-    void removeConnection(const TcpConnectionPtr &conn);
     void removeConnectionInLoop(const TcpConnectionPtr &conn);
 
+    // 保存所有的连接
     using ConnectionMap = std::unordered_map<std::string, TcpConnectionPtr>;
     ConnectionMap connections_;
     int nextConnId_;
@@ -62,7 +65,7 @@ private:
     ConnectionCallback connectionCallback_;       // 连接变化时的回调
     MessageCallback messageCallback_;             // 有读写消息时的回调
     WriteCompleteCallback writeCompleteCallback_; // 消息发送完成以后的回调
-    ThreadInitCallback threadInitCallback_;       // loop线程初始化的回调
+    ThreadInitCallback threadInitCallback_;       // loop 线程初始化的回调
 
     std::atomic_int started_;
 };
