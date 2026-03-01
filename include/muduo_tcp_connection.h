@@ -15,8 +15,7 @@ class EventLoop;
 class Socket;
 
 /**
- * 关联 ioloop
- * 管理用于通信的 sockket
+ * 关联 ioloop 和用于通信的 socket channel
  */
 class TcpConnection : Noncopyable, std::enable_shared_from_this<TcpConnection>
 {
@@ -28,7 +27,7 @@ public:
                   const InetAddress &peerAddr);
     ~TcpConnection();
 
-    EventLoop *getLoop() const { return loop_; }
+    EventLoop *getLoop() const { return ioLoop_; }
     const std::string &name() const { return name_; }
     const InetAddress &localAddress() const { return localAddr_; }
     const InetAddress &peerAddress() const { return peerAddr_; }
@@ -37,8 +36,9 @@ public:
     void connectEstablished();
     void connectDestroyed();
 
-    // 发送数据，未发完的数据会暂时保存到缓存区，并注册写事件，等待下次接续发送
+    // 发送数据，本次未未发完的数据会暂存到缓存区，并注册写事件，等待 channel 的可写事件，继续发送
     void send(const std::string &buf);
+    // 关闭发送
     void shutdown();
 
     void setConnectionCallback(const ConnectionCallback &cb)
@@ -77,17 +77,17 @@ private:
     };
     void setState(StateE state) { state_ = state; }
 
-    // 为 channel 设置的回调函数
+    // 为 conn channel 设置的回调函数
     void handleRead(Timestamp receiveTime);
     void handleWrite();
     void handleClose();
     void handleError();
 
-    // 通过 ioloop 发送数据
+    // send 具体实现
     void sendInLoop(const void *message, size_t len);
     void shutdownInLoop();
 
-    EventLoop *loop_;
+    EventLoop *ioLoop_;
     const std::string name_;
     std::atomic_int state_;
     bool reading_;
